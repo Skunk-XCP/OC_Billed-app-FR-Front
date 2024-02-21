@@ -37,7 +37,11 @@ export default class {
 
    // Fonction de tri des factures par date
    sortBills = (bills) => {
-      return bills.sort((a, b) => (b < a ? 1 : -1));
+      return bills.sort((a, b) => {
+         const dateA = new Date(a.date);
+         const dateB = new Date(b.date);
+         return dateB - dateA;
+      });
    };
 
    getBills = () => {
@@ -64,7 +68,7 @@ export default class {
                      };
                   }
                });
-               console.log("length", bills.length);
+               // retour des factures triées par date
                return this.sortBills(bills);
             });
       }
