@@ -39,7 +39,11 @@ describe("Given I am connected as an employee", () => {
                /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
             )
             .map((a) => a.innerHTML);
-         const billsDate = billsSorted.map((bill) => bill.date === [...dates]);
+         const billsDate = billsSorted.map((bill) => {
+            const billDate = bill.date;
+            const screenDate = [...dates];
+            billDate === screenDate;
+         });
          const antiChrono = (a, b) => (a < b ? 1 : -1);
          const datesSorted = [...billsDate].sort(antiChrono);
          expect(billsDate).toEqual(datesSorted);

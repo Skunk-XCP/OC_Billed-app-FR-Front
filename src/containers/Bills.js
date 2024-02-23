@@ -35,10 +35,6 @@ export default class {
       $("#modaleFile").modal("show");
    };
 
-   // sortBills = (bills) => {
-   //    return bills.sort((a, b) => ((b < a) ? 1 : -1));
-   // };
-
     sortBills = (bills) => {
       const monthMappings = {
         'Jan.': '01', 'Fév.': '02', 'Mar.': '03', 'Avr.': '04', 'Mai': '05', 'Juin': '06',
@@ -58,7 +54,6 @@ export default class {
         return dateB - dateA; // Trie par date décroissante
       });
     };
-    
    
    getBills = () => {
       if (this.store) {
