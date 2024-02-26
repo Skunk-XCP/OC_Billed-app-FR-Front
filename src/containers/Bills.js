@@ -35,26 +35,36 @@ export default class {
       $("#modaleFile").modal("show");
    };
 
-    sortBills = (bills) => {
+   sortBills = (bills) => {
       const monthMappings = {
-        'Jan.': '01', 'Fév.': '02', 'Mar.': '03', 'Avr.': '04', 'Mai': '05', 'Juin': '06',
-        'Juil.': '07', 'Aoû.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Déc.': '12'
+         "Jan.": "01",
+         "Fév.": "02",
+         "Mar.": "03",
+         "Avr.": "04",
+         "Mai.": "05",
+         "Juin.": "06",
+         "Juil.": "07",
+         "Aoû.": "08",
+         "Sep.": "09",
+         "Oct.": "10",
+         "Nov.": "11",
+         "Déc.": "12",
       };
-    
+
       const parseDate = (str) => {
-        const [day, month, year] = str.split(' ');
-        // Convertit le format '21 Fév. 24' en '2024-02-21'
-        const formattedDate = `20${year}-${monthMappings[month]}-${day}`;
-        return new Date(formattedDate);
+         const [day, month, year] = str.split(" ");
+         // Convertit le format '21 Fév. 24' en '2024-02-21'
+         const formattedDate = `20${year}-${monthMappings[month]}-${day}`;
+         return new Date(formattedDate);
       };
-    
+
       return bills.sort((a, b) => {
-        const dateA = parseDate(a.date);
-        const dateB = parseDate(b.date);
-        return dateB - dateA; // Trie par date décroissante
+         const dateA = parseDate(a.date);
+         const dateB = parseDate(b.date);
+         return dateB - dateA; // Trie par date décroissante
       });
-    };
-   
+   };
+
    getBills = () => {
       if (this.store) {
          return this.store
