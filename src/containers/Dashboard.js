@@ -1,4 +1,5 @@
 import { formatDate } from "../app/format.js";
+import BigBilledIcon from "../assets/svg/big_billed.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import USERS_TEST from "../constants/usersTest.js";
 import DashboardFormUI from "../views/DashboardFormUI.js";
@@ -94,6 +95,7 @@ export default class {
    };
 
    handleEditTicket(e, bill, bills) {
+      e.stopImmediatePropagation();
       if (this.counter === undefined || this.id !== bill.id) this.counter = 0;
       if (this.id === undefined || this.id !== bill.id) this.id = bill.id;
       if (this.counter % 2 === 0) {
@@ -104,20 +106,15 @@ export default class {
          $(".dashboard-right-container div").html(DashboardFormUI(bill));
          $(".vertical-navbar").css({ height: "150vh" });
          this.counter++;
+      } else {
+         $(`#open-bill${bill.id}`).css({ background: "#0D5AE5" });
+
+         $(".dashboard-right-container div").html(`
+        <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+      `);
+         $(".vertical-navbar").css({ height: "120vh" });
+         this.counter++;
       }
-
-      // Commenté car provoquait la réinitialisation du bg des tickets déjà sélectionnés
-      // et interférait avec la sélection constante de l'état du ticket entre les listes
-
-      // else {
-      //    $(`#open-bill${bill.id}`).css({ background: "#0D5AE5" });
-
-      //    $(".dashboard-right-container div").html(`
-      //   <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
-      // `);
-      //    $(".vertical-navbar").css({ height: "120vh" });
-      //    this.counter++;
-      // }
       $("#icon-eye-d").click(this.handleClickIconEye);
       $("#btn-accept-bill").click((e) => this.handleAcceptSubmit(e, bill));
       $("#btn-refuse-bill").click((e) => this.handleRefuseSubmit(e, bill));
