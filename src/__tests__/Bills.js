@@ -5,11 +5,14 @@ import "@testing-library/jest-dom";
 
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { localStorageMock } from "../__mocks__/localStorage.js";
+import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
 import BillsUI from "../views/BillsUI.js";
+
+jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
    describe("When I am on Bills Page", () => {
@@ -142,5 +145,73 @@ describe("When I am on Bills Page and I click on an eye icon", () => {
 
       // Vérifie que `handleClickIconEye` a bien été appelée avec l'élément `iconEye` comme argument
       expect(handleClickIconEye).toHaveBeenCalled();
+   });
+});
+
+// test d'intégration GET Bills
+describe("Given I am a user connected as Employee", () => {
+   describe("When an error occurs on API", () => {
+      beforeEach(() => {
+         // Surveille les appels faits à la méthode bills
+         jest.spyOn(mockStore, "bills");
+
+         // Configure les propriétés locales pour simuler un utilisateur connecté
+         Object.defineProperty(window, "localStorage", {
+            value: localStorageMock,
+         });
+
+         window.localStorage.setItem(
+            "user",
+            JSON.stringify({
+               type: "Employee",
+               email: "a@a",
+            })
+         );
+
+         // configure le routage
+         const root = document.createElement("div");
+         root.setAttribute("id", "root");
+         document.body.appendChild(root);
+         router();
+      });
+
+      // Vérifie la récupération des données depuis l'API qui échoue avec erreur 404
+      test("fetches bills from an API and fails with 404 message error", async () => {
+         mockStore.bills.mockImplementationOnce(() => {
+            return {
+               list: () => {
+                  return Promise.reject(new Error("Erreur 404"));
+               },
+            };
+         });
+
+         //Navige vers la page Bills
+         window.onNavigate(ROUTES_PATH.Bills);
+
+         // Attend la fin du cycle d'événement courant
+         await new Promise(process.nextTick);
+
+         // Recherche dans le DOM un élément contenant le texte "Erreur 404"
+         const message = await screen.getByText(/Erreur 404/);
+
+         // Vérifie que l'élément trouvé existe bien
+         expect(message).toBeTruthy();
+      });
+
+      // Vérifie la récupération des données depuis l'API qui échoue avec erreur 500
+      test("fetches messages from an API and fails with 500 message error", async () => {
+         mockStore.bills.mockImplementationOnce(() => {
+            return {
+               list: () => {
+                  return Promise.reject(new Error("Erreur 500"));
+               },
+            };
+         });
+
+         window.onNavigate(ROUTES_PATH.Bills);
+         await new Promise(process.nextTick);
+         const message = await screen.getByText(/Erreur 500/);
+         expect(message).toBeTruthy();
+      });
    });
 });
