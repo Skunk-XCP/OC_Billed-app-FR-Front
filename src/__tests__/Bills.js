@@ -150,31 +150,60 @@ describe("When I am on Bills Page and I click on an eye icon", () => {
 
 // test d'intégration GET Bills
 describe("Given I am a user connected as Employee", () => {
-   describe("When an error occurs on API", () => {
-      beforeEach(() => {
-         // Surveille les appels faits à la méthode bills
-         jest.spyOn(mockStore, "bills");
-
-         // Configure les propriétés locales pour simuler un utilisateur connecté
-         Object.defineProperty(window, "localStorage", {
-            value: localStorageMock,
-         });
-
-         window.localStorage.setItem(
+   describe("When I navigate to Bill", () => {
+      // Test pour la récupération des factures via l'API mock
+      test("fetches bills from mock API GET", async () => {
+         localStorage.setItem(
             "user",
-            JSON.stringify({
-               type: "Employee",
-               email: "a@a",
-            })
+            JSON.stringify({ type: "Employee", email: "a@a" })
          );
 
          // configure le routage
          const root = document.createElement("div");
          root.setAttribute("id", "root");
-         document.body.appendChild(root);
+         document.body.append(root);
          router();
+
+         // Simule la navigation vers la page des factures
+         window.onNavigate(ROUTES_PATH.Bills);
+
+         // Attends que le composant des factures soit présent dans le document
+         await waitFor(() => {
+            expect(screen.getByTestId("tbody")).toBeInTheDocument();
+         });
+
+         // Sélectionne toutes les factures dans le corps du tableau
+         const billsData = screen.getByTestId("tbody").querySelectorAll("tr");
+
+         // Vérifie que les éléments récupérés sont bien présents dans le DOM
+         expect(billsData).toBeTruthy();
       });
 
+      test("When an error occurs on API", async () => {
+         beforeEach(() => {
+            // Surveille les appels faits à la méthode bills
+            jest.spyOn(mockStore, "bills");
+
+            // Configure les propriétés locales pour simuler un utilisateur connecté
+            Object.defineProperty(window, "localStorage", {
+               value: localStorageMock,
+            });
+
+            window.localStorage.setItem(
+               "user",
+               JSON.stringify({
+                  type: "Employee",
+                  email: "a@a",
+               })
+            );
+
+            // configure le routage
+            const root = document.createElement("div");
+            root.setAttribute("id", "root");
+            document.body.appendChild(root);
+            router();
+         });
+      });
       // Vérifie la récupération des données depuis l'API qui échoue avec erreur 404
       test("fetches bills from an API and fails with 404 message error", async () => {
          mockStore.bills.mockImplementationOnce(() => {
