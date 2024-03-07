@@ -106,7 +106,18 @@ describe("Given I am connected as an employee", () => {
          document.body.innerHTML =
             "<button data-testid='btn-new-bill'>New Bill</button>";
 
-         bills.handleClickNewBill();
+         // Récupère le bouton
+         const newBillButton = document.querySelector(
+            "[data-testid='btn-new-bill']"
+         );
+
+         // Simule un clic sur le bouton
+         newBillButton.addEventListener("click", () =>
+            bills.handleClickNewBill()
+         );
+
+         // Simule le clic
+         fireEvent.click(newBillButton);
 
          // Vérifie que `handleClickNewBill` a bien été appelée avec l'élément `newBillButton` comme argument
          expect(mockNavigate).toHaveBeenCalledWith(ROUTES_PATH.NewBill);
