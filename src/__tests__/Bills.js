@@ -157,6 +157,30 @@ describe("Given I am connected as an employee", () => {
    // test d'intégration GET Bills
    describe("Given I am a user connected as Employee", () => {
       describe("When I navigate to Bill", () => {
+         beforeEach(() => {
+            // Surveille les appels faits à la méthode bills
+            jest.spyOn(mockStore, "bills");
+
+            // Configure les propriétés locales pour simuler un utilisateur connecté
+            Object.defineProperty(window, "localStorage", {
+               value: localStorageMock,
+            });
+
+            window.localStorage.setItem(
+               "user",
+               JSON.stringify({
+                  type: "Employee",
+                  email: "a@a",
+               })
+            );
+
+            // configure le routage
+            const root = document.createElement("div");
+            root.setAttribute("id", "root");
+            document.body.appendChild(root);
+            router();
+         });
+
          // Test pour la récupération des factures via l'API mock
          test("fetches bills from mock API GET", async () => {
             localStorage.setItem(
@@ -185,32 +209,6 @@ describe("Given I am connected as an employee", () => {
 
             // Vérifie que les éléments récupérés sont bien présents dans le DOM
             expect(billsData).toBeTruthy();
-         });
-
-         test("When an error occurs on API", async () => {
-            beforeEach(() => {
-               // Surveille les appels faits à la méthode bills
-               jest.spyOn(mockStore, "bills");
-
-               // Configure les propriétés locales pour simuler un utilisateur connecté
-               Object.defineProperty(window, "localStorage", {
-                  value: localStorageMock,
-               });
-
-               window.localStorage.setItem(
-                  "user",
-                  JSON.stringify({
-                     type: "Employee",
-                     email: "a@a",
-                  })
-               );
-
-               // configure le routage
-               const root = document.createElement("div");
-               root.setAttribute("id", "root");
-               document.body.appendChild(root);
-               router();
-            });
          });
 
          // Vérifie la récupération des données depuis l'API qui échoue avec erreur 404
